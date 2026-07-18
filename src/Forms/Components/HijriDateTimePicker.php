@@ -41,6 +41,8 @@ class HijriDateTimePicker extends DateTimePicker
 
     protected bool|Closure $shouldShowEquivalentDate = true;
 
+    protected bool|Closure $allowCalendarToggle = true;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -130,6 +132,18 @@ class HijriDateTimePicker extends DateTimePicker
         return $this;
     }
 
+    /**
+     * Allow (or forbid) the in-panel button that flips the calendar the user
+     * sees between Hijri and Gregorian. The stored value is unaffected — only
+     * the display calendar changes.
+     */
+    public function calendarToggle(bool|Closure $condition = true): static
+    {
+        $this->allowCalendarToggle = $condition;
+
+        return $this;
+    }
+
     public function getDisplayCalendar(): CalendarSystem
     {
         $calendar = $this->evaluate($this->displayCalendar);
@@ -162,6 +176,46 @@ class HijriDateTimePicker extends DateTimePicker
     public function shouldShowEquivalentDate(): bool
     {
         return (bool) $this->evaluate($this->shouldShowEquivalentDate);
+    }
+
+    public function isCalendarToggleAllowed(): bool
+    {
+        return (bool) $this->evaluate($this->allowCalendarToggle);
+    }
+
+    /**
+     * The written display format used when the grid shows the Hijri calendar,
+     * regardless of which calendar is configured as the default display.
+     */
+    public function getHijriDisplayFormat(): string
+    {
+        return $this->displaysHijri()
+            ? $this->getDisplayFormat()
+            : $this->defaultDisplayFormatFor(hijri: true);
+    }
+
+    /**
+     * The written display format used when the grid shows the Gregorian
+     * calendar, regardless of the configured default display.
+     */
+    public function getGregorianDisplayFormat(): string
+    {
+        return $this->displaysHijri()
+            ? $this->defaultDisplayFormatFor(hijri: false)
+            : $this->getDisplayFormat();
+    }
+
+    protected function defaultDisplayFormatFor(bool $hijri): string
+    {
+        $format = $this->hasDate() ? ($hijri ? 'j F Yهـ' : 'j F Y') : '';
+
+        if (! $this->hasTime()) {
+            return $format;
+        }
+
+        $time = $this->hasSeconds() ? 'H:i:s' : 'H:i';
+
+        return $format === '' ? $time : "{$format} {$time}";
     }
 
     /**

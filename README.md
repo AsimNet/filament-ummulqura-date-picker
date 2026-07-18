@@ -9,6 +9,7 @@ Conversions use [`asimnet/ummulqura-calendar`](https://github.com/AsimNet/ummulq
 - **Real Hijri month grid** — month lengths (29/30 days) come from the official tables, including years where Dhu al-Hijjah has 30 days.
 - **Two independent axes** — display calendar (what the picker shows) and storage calendar (what goes into your database), in any combination.
 - **Equivalent date always visible** — the display input shows the other calendar's date in parentheses, and the panel footer live-updates both calendars for the focused day, so the user always knows exactly which day they are picking.
+- **Runtime calendar switch** — a button in the panel lets the user flip the grid between Hijri and Gregorian on the fly; the stored value never changes (it stays in the configured storage calendar). Disable with `->calendarToggle(false)`.
 - **Time support** — hours/minutes/seconds alongside the Hijri date, preserved in either storage calendar.
 - **Server-side authority** — the selected value is re-validated on the server against the Umm al-Qura tables; nonexistent dates (e.g. 30 Safar) are rejected with a translatable message.
 - **Familiar API** — extends Filament's own `DateTimePicker`, so `minDate()`, `maxDate()`, `disabledDates()`, `displayFormat()`, `closeOnDateSelection()`, `firstDayOfWeek()` and friends all work.
@@ -57,6 +58,7 @@ HijriDateTimePicker::make('starts_at')
     ->time(false)                         // date only (or use HijriDatePicker)
     ->indicDigits()                       // ٢٥ محرم ١٤٤٧هـ instead of 25 محرم 1447هـ
     ->equivalentDate(false)               // hide the other-calendar hint
+    ->calendarToggle(false)               // hide the in-panel Hijri/Gregorian switch button
     ->displayFormat('j F Yهـ H:i')        // PHP date() tokens, applied to the display calendar
     ->minDate(now()->subYear())           // Gregorian bound (Carbon/string)
     ->maxHijriDate('1447-12-29')          // or bound it in Hijri directly

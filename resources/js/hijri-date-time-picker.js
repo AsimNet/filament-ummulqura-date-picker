@@ -115,9 +115,11 @@ export function createUmmAlQuraEngine({ epoch, monthLengths, minYear }) {
 }
 
 export default function hijriDateTimePickerFormComponent({
+    allowCalendarToggle,
     defaultFocusedDate,
     displayCalendar,
-    displayFormat,
+    displayFormatGregorian,
+    displayFormatHijri,
     firstDayOfWeek,
     hijriEpoch,
     hijriMaxYear,
@@ -131,6 +133,8 @@ export default function hijriDateTimePickerFormComponent({
     shouldShowEquivalentDate,
     state,
     storageCalendar,
+    toggleToGregorianLabel,
+    toggleToHijriLabel,
 }) {
     const engine = createUmmAlQuraEngine({
         epoch: hijriEpoch,
@@ -158,6 +162,13 @@ export default function hijriDateTimePickerFormComponent({
 
     return {
         state,
+
+        // The calendar the grid currently shows. Starts at the configured
+        // displayCalendar and can be flipped at runtime with toggleCalendar()
+        // without ever changing what is stored (storageCalendar).
+        activeCalendar: displayCalendar,
+
+        allowCalendarToggle,
 
         displayText: '',
 
@@ -192,24 +203,8 @@ export default function hijriDateTimePickerFormComponent({
         yearInputMax: null,
 
         init() {
-            this.months =
-                displayCalendar === 'hijri'
-                    ? hijriMonthNames
-                    : Array.from({ length: 12 }, (_, index) =>
-                          gregorianMonthName(index + 1, 'long'),
-                      )
-
             this.dayLabels = this.getDayLabels()
-
-            const yearBounds =
-                displayCalendar === 'hijri'
-                    ? [hijriMinYear, hijriMaxYear]
-                    : [
-                          gregorianFromRjd(engine.minRjd).year,
-                          gregorianFromRjd(engine.maxRjd).year,
-                      ]
-            this.yearInputMin = yearBounds[0]
-            this.yearInputMax = yearBounds[1]
+            this.rebuildCalendarChrome()
 
             const selected = this.getSelected()
 
@@ -357,7 +352,7 @@ export default function hijriDateTimePickerFormComponent({
         },
 
         rjdFromDisplayParts(year, month, day) {
-            if (displayCalendar === 'hijri') {
+            if (this.activeCalendar === 'hijri') {
                 return (
                     engine.toRjd(year, month, day) ??
                     Math.min(Math.max(this.todayRjd(), engine.minRjd), engine.maxRjd)
@@ -371,17 +366,63 @@ export default function hijriDateTimePickerFormComponent({
         },
 
         displayPartsFromRjd(rjd) {
-            return displayCalendar === 'hijri'
+            return this.activeCalendar === 'hijri'
                 ? engine.toHijri(rjd)
                 : gregorianFromRjd(rjd)
         },
 
         displayMonthLength(year, month) {
-            if (displayCalendar === 'hijri') {
+            if (this.activeCalendar === 'hijri') {
                 return engine.monthLength(year, month) ?? 30
             }
 
             return new Date(Date.UTC(year, month, 0)).getUTCDate()
+        },
+
+        // Month names, day labels and year bounds for the active calendar.
+        // Called on init and whenever the display calendar is toggled.
+        rebuildCalendarChrome() {
+            this.months =
+                this.activeCalendar === 'hijri'
+                    ? hijriMonthNames
+                    : Array.from({ length: 12 }, (_, index) =>
+                          gregorianMonthName(index + 1, 'long'),
+                      )
+
+            const yearBounds =
+                this.activeCalendar === 'hijri'
+                    ? [hijriMinYear, hijriMaxYear]
+                    : [
+                          gregorianFromRjd(engine.minRjd).year,
+                          gregorianFromRjd(engine.maxRjd).year,
+                      ]
+            this.yearInputMin = yearBounds[0]
+            this.yearInputMax = yearBounds[1]
+        },
+
+        activeDisplayFormat() {
+            return this.activeCalendar === 'hijri'
+                ? displayFormatHijri
+                : displayFormatGregorian
+        },
+
+        calendarToggleLabel() {
+            return this.activeCalendar === 'hijri'
+                ? toggleToGregorianLabel
+                : toggleToHijriLabel
+        },
+
+        // Flip the grid between Hijri and Gregorian without touching the
+        // stored value; the currently focused day is preserved by RJD.
+        toggleCalendar() {
+            const focusedRjd = this.focusedRjd()
+
+            this.activeCalendar =
+                this.activeCalendar === 'hijri' ? 'gregorian' : 'hijri'
+
+            this.rebuildCalendarChrome()
+            this.setFocusedRjd(focusedRjd)
+            this.setDisplayText()
         },
 
         setFocusedRjd(rjd) {
@@ -775,12 +816,16 @@ export default function hijriDateTimePickerFormComponent({
                 return
             }
 
-            let text = this.formatDate(selected.rjd, displayCalendar, displayFormat)
+            let text = this.formatDate(
+                selected.rjd,
+                this.activeCalendar,
+                this.activeDisplayFormat(),
+            )
 
             if (shouldShowEquivalentDate) {
                 const equivalent = this.equivalentDateText(
                     selected.rjd,
-                    displayCalendar === 'hijri' ? 'gregorian' : 'hijri',
+                    this.activeCalendar === 'hijri' ? 'gregorian' : 'hijri',
                 )
 
                 if (equivalent) {
@@ -794,10 +839,10 @@ export default function hijriDateTimePickerFormComponent({
         setFocusedDualText() {
             const rjd = this.focusedRjd()
 
-            const primary = this.equivalentDateText(rjd, displayCalendar)
+            const primary = this.equivalentDateText(rjd, this.activeCalendar)
             const secondary = this.equivalentDateText(
                 rjd,
-                displayCalendar === 'hijri' ? 'gregorian' : 'hijri',
+                this.activeCalendar === 'hijri' ? 'gregorian' : 'hijri',
             )
 
             this.focusedDualText =

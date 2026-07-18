@@ -33,6 +33,7 @@
     $storageCalendar = $getStorageCalendar()->value;
     $hasIndicDigits = $hasIndicDigits();
     $shouldShowEquivalentDate = $shouldShowEquivalentDate();
+    $isCalendarToggleAllowed = $isCalendarToggleAllowed();
 @endphp
 
 <x-dynamic-component
@@ -61,8 +62,12 @@
             x-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('hijri-date-time-picker', 'asimnet/filament-ummulqura-date-picker') }}"
             x-data="hijriDateTimePickerFormComponent({
                         defaultFocusedDate: @js($defaultFocusedDate),
+                        allowCalendarToggle: @js($isCalendarToggleAllowed),
                         displayCalendar: @js($displayCalendar),
-                        displayFormat: @js($getDisplayFormat()),
+                        displayFormatHijri: @js($getHijriDisplayFormat()),
+                        displayFormatGregorian: @js($getGregorianDisplayFormat()),
+                        toggleToHijriLabel: @js(__('filament-ummulqura-date-picker::picker.switch_to_hijri')),
+                        toggleToGregorianLabel: @js(__('filament-ummulqura-date-picker::picker.switch_to_gregorian')),
                         firstDayOfWeek: {{ $getFirstDayOfWeek() }},
                         hijriEpoch: @js($getUmmAlQuraEpoch()),
                         hijriMaxYear: {{ $getHijriMaxYear() }},
@@ -92,6 +97,7 @@
                     $storageCalendar,
                     $hasIndicDigits,
                     $shouldShowEquivalentDate,
+                    $isCalendarToggleAllowed,
                 ])), 0, 64)
             }}"
             x-on:keydown.esc="isOpen() && $event.stopPropagation()"
@@ -279,13 +285,24 @@
                             ></span>
                         @endif
 
-                        <button
-                            type="button"
-                            class="fi-fo-hijri-date-time-picker-footer-today-btn"
-                            x-on:click="selectToday()"
-                        >
-                            {{ __('filament-ummulqura-date-picker::picker.today') }}
-                        </button>
+                        <div class="fi-fo-hijri-date-time-picker-footer-actions">
+                            @if ($isCalendarToggleAllowed)
+                                <button
+                                    type="button"
+                                    class="fi-fo-hijri-date-time-picker-footer-toggle-btn"
+                                    x-on:click="toggleCalendar()"
+                                    x-text="calendarToggleLabel()"
+                                ></button>
+                            @endif
+
+                            <button
+                                type="button"
+                                class="fi-fo-hijri-date-time-picker-footer-today-btn"
+                                x-on:click="selectToday()"
+                            >
+                                {{ __('filament-ummulqura-date-picker::picker.today') }}
+                            </button>
+                        </div>
                     </div>
                 @endif
             </div>
