@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AsimNet\FilamentUmmulqura\StateCasts;
 
+use AsimNet\FilamentUmmulqura\Support\Reckonings;
 use AsimNet\UmmulquraCalendar\HijriDate;
 use AsimNet\UmmulquraCalendar\OutOfSupportedRangeException;
 use AsimNet\UmmulquraCalendar\UmmAlQura;
@@ -54,7 +55,7 @@ class HijriDateStateCast implements StateCast
 
         if ($state instanceof DateTimeInterface) {
             try {
-                $hijri = UmmAlQura::toHijri($state);
+                $hijri = UmmAlQura::toHijri($state, Reckonings::forGregorian($state));
             } catch (OutOfSupportedRangeException) {
                 return null;
             }
