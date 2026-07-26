@@ -24,6 +24,12 @@
             "name": "AsimNet"
         }
     ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://repo.schemava.dev/r/public"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "asimnet/ummulqura-calendar": "^1.1",
