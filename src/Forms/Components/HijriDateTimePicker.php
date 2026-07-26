@@ -6,6 +6,7 @@ namespace AsimNet\FilamentUmmulqura\Forms\Components;
 
 use AsimNet\FilamentUmmulqura\Enums\CalendarSystem;
 use AsimNet\FilamentUmmulqura\StateCasts\HijriDateStateCast;
+use AsimNet\FilamentUmmulqura\Support\Reckonings;
 use AsimNet\FilamentUmmulqura\Support\UmmAlQuraScriptData;
 use AsimNet\UmmulquraCalendar\HijriDate;
 use AsimNet\UmmulquraCalendar\OutOfSupportedRangeException;
@@ -62,7 +63,7 @@ class HijriDateTimePicker extends DateTimePicker
                 }
 
                 try {
-                    $gregorian = UmmAlQura::toGregorian($parts['year'], $parts['month'], $parts['day']);
+                    $gregorian = UmmAlQura::toGregorian($parts['year'], $parts['month'], $parts['day'], Reckonings::forHijriYear($parts['year']));
                 } catch (OutOfSupportedRangeException) {
                     $fail(__('filament-ummulqura-date-picker::validation.invalid_hijri_date'));
 
@@ -71,15 +72,15 @@ class HijriDateTimePicker extends DateTimePicker
 
                 $timestamp = Carbon::instance($gregorian)->setTime($parts['hour'], $parts['minute'], $parts['second']);
 
-                if (($minDate = $component->getMinDate()) && $timestamp->lt(Carbon::parse($minDate))) {
+                if (($minDate = $component->getMinDate()) && $timestamp->lt($min = Carbon::parse($minDate))) {
                     $fail(__('filament-ummulqura-date-picker::validation.after_or_equal', [
-                        'date' => UmmAlQura::format(Carbon::parse($minDate), 'j F Yهـ'),
+                        'date' => UmmAlQura::format($min, 'j F Yهـ', Reckonings::forGregorian($min)),
                     ]));
                 }
 
-                if (($maxDate = $component->getMaxDate()) && $timestamp->gt(Carbon::parse($maxDate)->endOfDay())) {
+                if (($maxDate = $component->getMaxDate()) && $timestamp->gt(($max = Carbon::parse($maxDate))->endOfDay())) {
                     $fail(__('filament-ummulqura-date-picker::validation.before_or_equal', [
-                        'date' => UmmAlQura::format(Carbon::parse($maxDate), 'j F Yهـ'),
+                        'date' => UmmAlQura::format($max, 'j F Yهـ', Reckonings::forGregorian($max)),
                     ]));
                 }
             },
@@ -343,6 +344,6 @@ class HijriDateTimePicker extends DateTimePicker
             $date = new HijriDate($parts['year'], $parts['month'], $parts['day']);
         }
 
-        return UmmAlQura::toGregorian($date->year, $date->month, $date->day)->format('Y-m-d');
+        return UmmAlQura::toGregorian($date->year, $date->month, $date->day, Reckonings::forHijriYear($date->year))->format('Y-m-d');
     }
 }
