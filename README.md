@@ -85,11 +85,18 @@ HijriDateTimePicker::make('starts_at')
 
 ### Displaying stored Gregorian dates as Hijri in tables
 
+Pass the same reckoning the picker uses (see [Matching national IDs](#matching-national-ids-and-civil-records)) so table cells render the identical Hijri day — otherwise pre-1420 AH dates can show a day off from the picker and the ID:
+
 ```php
+use AsimNet\FilamentUmmulqura\Support\Reckonings;
 use AsimNet\UmmulquraCalendar\UmmAlQura;
 
 TextColumn::make('birth_date')
-    ->formatStateUsing(fn ($state) => UmmAlQura::format(Carbon::parse($state), 'j F Yهـ'))
+    ->formatStateUsing(fn ($state) => UmmAlQura::format(
+        $date = Carbon::parse($state),
+        'j F Yهـ',
+        Reckonings::forGregorian($date),
+    ))
 ```
 
 ## Notes & caveats
