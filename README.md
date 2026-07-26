@@ -16,6 +16,12 @@ Conversions use [`asimnet/ummulqura-calendar`](https://github.com/AsimNet/ummulq
 - RTL, dark mode, keyboard navigation, Arabic/English month names, and optional Eastern Arabic (Indic) numerals.
 - Supported range: **1318-01-01 → 1500-12-30 AH** (1900-04-30 → 2077-11-16 CE).
 
+## Matching national IDs and civil records
+
+Conversions follow the Umm al-Qura calendar **as it was published at the time** (`Reckoning::AsPublished` in the underlying library). This only affects dates before **1420 AH (April 1999)**: today's official KACST service applies the current criterion retroactively and can land a day off from what the almanac actually printed — and the printed value is what Saudi national IDs and Ahwal Madaniyya documents recorded. The picker uses the printed value, so a birth date round-trips against the ID.
+
+From 1420 AH onward both readings are identical, so present-day and future dates are unaffected. For 1318–1355 AH (before 1937 CE), where the historical almanacs are not settled, the picker falls back to the official reconstruction.
+
 ## Installation
 
 ```bash
@@ -79,11 +85,18 @@ HijriDateTimePicker::make('starts_at')
 
 ### Displaying stored Gregorian dates as Hijri in tables
 
+Pass the same reckoning the picker uses (see [Matching national IDs](#matching-national-ids-and-civil-records)) so table cells render the identical Hijri day — otherwise pre-1420 AH dates can show a day off from the picker and the ID:
+
 ```php
+use AsimNet\FilamentUmmulqura\Support\Reckonings;
 use AsimNet\UmmulquraCalendar\UmmAlQura;
 
 TextColumn::make('birth_date')
-    ->formatStateUsing(fn ($state) => UmmAlQura::format(Carbon::parse($state), 'j F Yهـ'))
+    ->formatStateUsing(fn ($state) => UmmAlQura::format(
+        $date = Carbon::parse($state),
+        'j F Yهـ',
+        Reckonings::forGregorian($date),
+    ))
 ```
 
 ## Notes & caveats

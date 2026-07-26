@@ -61,7 +61,12 @@ export function createUmmAlQuraEngine({ epoch, monthLengths, minYear }) {
 
     for (let index = 0; index < monthLengths.length; index++) {
         starts[index + 1] =
-            starts[index] + (monthLengths[index] === '9' ? 29 : 30)
+            starts[index] +
+            (monthLengths[index] === '9'
+                ? 29
+                : monthLengths[index] === '8'
+                  ? 28
+                  : 30)
     }
 
     const monthIndex = (year, month) => {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AsimNet\FilamentUmmulqura\Tests;
 
+use AsimNet\FilamentUmmulqura\Support\Reckonings;
 use AsimNet\FilamentUmmulqura\Support\UmmAlQuraScriptData;
 use AsimNet\UmmulquraCalendar\UmmAlQura;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +28,11 @@ final class UmmAlQuraScriptDataTest extends TestCase
 
         for ($year = UmmAlQura::HIJRI_MIN_YEAR; $year <= UmmAlQura::HIJRI_MAX_YEAR; $year++) {
             for ($month = 1; $month <= 12; $month++) {
-                $expected = UmmAlQura::monthLength($year, $month) === 29 ? '9' : '0';
+                $expected = match (UmmAlQura::monthLength($year, $month, Reckonings::forHijriYear($year))) {
+                    28 => '8',
+                    29 => '9',
+                    default => '0',
+                };
 
                 if ($lengths[$index] !== $expected) {
                     $this->fail("Month length mismatch at {$year}-{$month}.");
@@ -38,6 +43,16 @@ final class UmmAlQuraScriptDataTest extends TestCase
         }
 
         $this->assertSame($expectedMonths, $index);
+    }
+
+    public function test_month_lengths_use_the_as_published_reckoning(): void
+    {
+        // Sha'ban 1364 AH is 28 days only in the as-published tables that
+        // Saudi civil records follow; the official reconstruction never is.
+        // Its presence proves the client engine ships as-published data.
+        $index = ((1364 - UmmAlQura::HIJRI_MIN_YEAR) * 12) + (8 - 1);
+
+        $this->assertSame('8', UmmAlQuraScriptData::monthLengths()[$index]);
     }
 
     public function test_hijri_month_names_follow_the_locale(): void

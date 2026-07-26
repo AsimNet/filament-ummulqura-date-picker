@@ -7,6 +7,7 @@ declare(strict_types=1);
  * the supported range) as JSON for tools/verify-js-engine.mjs.
  */
 
+use AsimNet\FilamentUmmulqura\Support\Reckonings;
 use AsimNet\FilamentUmmulqura\Support\UmmAlQuraScriptData;
 use AsimNet\UmmulquraCalendar\UmmAlQura;
 
@@ -22,16 +23,21 @@ if (! class_exists(UmmAlQuraScriptData::class)) {
     require_once __DIR__.'/../src/Support/UmmAlQuraScriptData.php';
 }
 
+if (! class_exists(Reckonings::class)) {
+    require_once __DIR__.'/../src/Support/Reckonings.php';
+}
+
 $pairs = [];
 $monthLengthSamples = [];
 
 for ($year = UmmAlQura::HIJRI_MIN_YEAR; $year <= UmmAlQura::HIJRI_MAX_YEAR; $year++) {
     for ($month = 1; $month <= 12; $month++) {
-        $length = UmmAlQura::monthLength($year, $month);
+        $reckoning = Reckonings::forHijriYear($year);
+        $length = UmmAlQura::monthLength($year, $month, $reckoning);
         $monthLengthSamples[] = [$year, $month, $length];
 
         foreach ([1, 15, $length] as $day) {
-            $pairs[] = [$year, $month, $day, UmmAlQura::toGregorian($year, $month, $day)->format('Y-m-d')];
+            $pairs[] = [$year, $month, $day, UmmAlQura::toGregorian($year, $month, $day, $reckoning)->format('Y-m-d')];
         }
     }
 }
