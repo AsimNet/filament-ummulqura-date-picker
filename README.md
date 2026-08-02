@@ -4,6 +4,20 @@ A Hijri (Umm al-Qura) date & time picker for [Filament](https://filamentphp.com)
 
 Conversions use [`asimnet/ummulqura-calendar`](https://github.com/AsimNet/ummulqura-calendar) — exact month-start tables harvested from the official Saudi KACST Umm al-Qura service, not an arithmetic approximation.
 
+<p align="center">
+  <img
+    src="https://raw.githubusercontent.com/AsimNet/filament-ummulqura-date-picker/main/art/demo.gif"
+    alt="Picking a Hijri date: the panel shows a real Umm al-Qura month grid with the Gregorian equivalent under it, the month is changed, a day is picked, the grid is flipped to Gregorian, and a time is set"
+    width="640">
+</p>
+
+<p align="center">
+  <sub>
+    <a href="https://raw.githubusercontent.com/AsimNet/filament-ummulqura-date-picker/main/art/demo.mp4">MP4 version</a>
+    — captured with <a href="tools/capture-screenshots.mjs"><code>tools/capture-screenshots.mjs</code></a>
+  </sub>
+</p>
+
 ## Features
 
 - **Real Hijri month grid** — month lengths (29/30 days) come from the official tables, including years where Dhu al-Hijjah has 30 days.
@@ -15,6 +29,19 @@ Conversions use [`asimnet/ummulqura-calendar`](https://github.com/AsimNet/ummulq
 - **Familiar API** — extends Filament's own `DateTimePicker`, so `minDate()`, `maxDate()`, `disabledDates()`, `displayFormat()`, `closeOnDateSelection()`, `firstDayOfWeek()` and friends all work.
 - RTL, dark mode, keyboard navigation, Arabic/English month names, and optional Eastern Arabic (Indic) numerals.
 - Supported range: **1318-01-01 → 1500-12-30 AH** (1900-04-30 → 2077-11-16 CE).
+
+| Hijri grid, with the Gregorian day under the cursor | The same field, flipped to Gregorian mid-pick |
+| --- | --- |
+| <img src="https://raw.githubusercontent.com/AsimNet/filament-ummulqura-date-picker/main/art/picker-en-light.png" alt="A date-of-birth field open on Shawwal 1415, with the footer reading 24 Shawwal 1415 = March 25, 1995"> | <img src="https://raw.githubusercontent.com/AsimNet/filament-ummulqura-date-picker/main/art/picker-gregorian.png" alt="The same field showing a March 1995 grid, with the footer reading March 25, 1995 = 24 Shawwal 1415"> |
+
+<p align="center">
+  <img
+    src="https://raw.githubusercontent.com/AsimNet/filament-ummulqura-date-picker/main/art/picker-ar-dark.png"
+    alt="The same form in Arabic, right to left and in dark mode, with Eastern Arabic numerals in the month grid"
+    width="900">
+</p>
+
+<p align="center"><sub>Arabic, RTL, dark mode, Eastern Arabic numerals — all four fields above are one form.</sub></p>
 
 ## Matching national IDs and civil records
 
