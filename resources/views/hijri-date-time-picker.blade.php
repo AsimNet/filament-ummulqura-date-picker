@@ -164,8 +164,14 @@
             >
                 @if ($hasDate)
                     <div class="fi-fo-date-time-picker-panel-header">
+                        {{-- x-effect re-applies the selection after the
+                             options themselves render: x-model writes the
+                             value while the x-for template is still empty,
+                             which would otherwise leave the field showing
+                             the first month whatever the focused one is. --}}
                         <select
                             x-model="focusedMonth"
+                            x-effect="months.length && $nextTick(() => ($el.value = focusedMonth))"
                             class="fi-fo-date-time-picker-month-select"
                         >
                             <template x-for="(month, index) in months">
