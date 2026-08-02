@@ -11,13 +11,6 @@
     width="640">
 </p>
 
-<p align="center">
-  <sub>
-    <a href="https://raw.githubusercontent.com/AsimNet/filament-ummulqura-date-picker/main/art/demo.mp4">نسخة MP4</a>
-    — التُقطت بـ <a href="tools/capture-screenshots.mjs"><code>tools/capture-screenshots.mjs</code></a>
-  </sub>
-</p>
-
 ## المزايا
 
 - شبكة شهور هجرية حقيقية (29/30 يومًا من الجداول الرسمية).

@@ -11,13 +11,6 @@ Conversions use [`asimnet/ummulqura-calendar`](https://github.com/AsimNet/ummulq
     width="640">
 </p>
 
-<p align="center">
-  <sub>
-    <a href="https://raw.githubusercontent.com/AsimNet/filament-ummulqura-date-picker/main/art/demo.mp4">MP4 version</a>
-    — captured with <a href="tools/capture-screenshots.mjs"><code>tools/capture-screenshots.mjs</code></a>
-  </sub>
-</p>
-
 ## Features
 
 - **Real Hijri month grid** — month lengths (29/30 days) come from the official tables, including years where Dhu al-Hijjah has 30 days.
@@ -130,7 +123,7 @@ TextColumn::make('birth_date')
 
 - Conversion is **civil-date based** (midnight boundary). The religious Hijri day begins at sunset; if you show a date near midnight it follows the civil convention, like every Umm al-Qura conversion service.
 - Dates outside the supported range fail validation with a translatable message instead of throwing.
-- The JS calendar engine is generated from the PHP package's tables and is cross-verified against it (every month start, middle, and end in the supported range) by `tools/verify-js-engine.mjs`.
+- The JS calendar engine is generated from the PHP package's tables and is cross-verified against it — every month start, middle, and end in the supported range.
 
 ## Testing
 
