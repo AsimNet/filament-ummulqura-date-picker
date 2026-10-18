@@ -44,10 +44,20 @@ From 1420 AH onward both readings are identical, so present-day and future dates
 
 ## Installation
 
+The plugin and its calendar engine are installed straight from GitHub. Add both repositories to Composer (Composer
+does not read repositories declared by a dependency, so the calendar engine needs its own entry), then require the
+plugin:
+
 ```bash
+composer config repositories.ummulqura-calendar vcs https://github.com/AsimNet/ummulqura-calendar
+composer config repositories.filament-ummulqura-date-picker vcs https://github.com/AsimNet/filament-ummulqura-date-picker
 composer require asimnet/filament-ummulqura-date-picker
 php artisan filament:assets
 ```
+
+> **GitHub rate limits:** Composer reads tags through the GitHub API. If installs get throttled (common in CI),
+> add a GitHub token: `composer config --global github-oauth.github.com YOUR-GITHUB-TOKEN` (no scopes needed for a
+> public repository), or provide it via `COMPOSER_AUTH='{"github-oauth":{"github.com":"YOUR-GITHUB-TOKEN"}}'`.
 
 ## Usage
 
