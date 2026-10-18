@@ -26,8 +26,8 @@
     ],
     "repositories": [
         {
-            "type": "composer",
-            "url": "https://repo.schemava.dev/r/public"
+            "type": "vcs",
+            "url": "https://github.com/AsimNet/ummulqura-calendar"
         }
     ],
     "require": {
